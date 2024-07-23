@@ -5,35 +5,43 @@ import { IChatRepository } from "./IChatRepository";
 import Message from "../../model/Message";
 
 export class ChatRepository implements IChatRepository {
-    async find(userId: string): Promise<{ success: boolean; message: string; data?: IChat[]; }> {
-        try {
-            const UserId = new mongoose.Types.ObjectId(userId);
-            console.log("userIDD", UserId);
-            
-            const chats = await Chat.find({ participants: UserId })
-                .populate({
-                    path: 'lastMessage',
-                    model: Message
-                });
 
-            if (!chats || chats.length === 0) {
-                return { success: false, message: "No chats found" };
-            }
-console.log("datass", chats);
+async find(userId: string): Promise<{ success: boolean; message: string; data?: IChat[]; }> {
+    try {
 
-            const formattedChats = chats.map(chat => ({
-                _id: chat._id,
-                participants: chat?.participants?.filter(p => p !== userId),
-                lastMessage: chat.lastMessage
-            }));
-             
-            return { success: true, message: "Chats found", data: formattedChats };
-        } catch (error) {
-            const err = error as Error;
-            console.log("Error fetching chats", err);
-            throw new Error(`Error fetching chats: ${err.message}`);
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return { success: false, message: "Invalid userId format" };
         }
+
+        const UserId = new mongoose.Types.ObjectId(userId);
+        console.log("userIDD", UserId);
+        
+        const chats = await Chat.find({ participants: UserId })
+            .populate({
+                path: 'lastMessage',
+                model: Message
+            });
+
+        if (!chats || chats.length === 0) {
+            return { success: false, message: "No chats found" };
+        }
+
+        console.log("datass", chats);
+
+        const formattedChats = chats.map(chat => ({
+            _id: chat._id,
+            participants: chat?.participants?.filter(p => p !== userId),
+            lastMessage: chat.lastMessage
+        }));
+         
+        return { success: true, message: "Chats found", data: formattedChats };
+    } catch (error) {
+        const err = error as Error;
+        console.log("Error fetching chats", err);
+        return { success: false, message: `Error fetching chats: ${err.message}` };
     }
+}
+
 
     async createChatId(userId:string, recievedId:string):Promise<{success:boolean, message:string, data?:IChat}>{
         try {
@@ -58,27 +66,44 @@ console.log("datass", chats);
         }
     }
 
-    async findMessages(userId: string, recievedId: string): Promise<{ success: boolean, message: string, data?: IMessage[] }> {
+    async findMessages(userId: string, receiverId: string): Promise<{ success: boolean; message: string; data?: IMessage[]; }> {
         try {
-            const senderId = new mongoose.Types.ObjectId(userId);
-            const recieverId = new mongoose.Types.ObjectId(recievedId);
+            console.log("Received userId:", userId);
+            console.log("Received receiverId:", receiverId);
+    
+            if (!mongoose.Types.ObjectId.isValid(userId)) {
+                console.log("Invalid userId format");
+                return { success: false, message: "Invalid userId format" };
+            }
+            if (!mongoose.Types.ObjectId.isValid(receiverId)) {
+                console.log("Invalid receiverId format");
+                return { success: false, message: "Invalid receiverId format" };
+            }
+    console.log("userIdddddddddddddd123",userId, receiverId);
+    
+            const UserIdObj = new mongoose.Types.ObjectId(userId);
+            const ReceiverIdObj = new mongoose.Types.ObjectId(receiverId);
+    
+            console.log("UserIdObj:", UserIdObj);
+            console.log("ReceiverIdObj:", ReceiverIdObj);
+    
             const messages = await Message.find({
                 $or: [
-                    { senderId: senderId, recieverId: recieverId },
-                    { senderId: recieverId, recieverId: senderId }
+                    { senderId: UserIdObj, recieverId: ReceiverIdObj },
+                    { senderId: ReceiverIdObj, recieverId: UserIdObj }
                 ]
-            }).sort({ createdAt: 1 }); 
-            console.log("messages",messages);
-            
-            return {
-                success: true,
-                message: "Messages fetched successfully",
-                data: messages
-            };
+            }).sort({ createdAt: 1 });
+    
+    
+            if (!messages || messages.length === 0) {
+                return { success: false, message: "No messages found" };
+            }
+    
+            return { success: true, message: "Messages found", data: messages };
         } catch (error) {
             const err = error as Error;
             console.log("Error fetching messages", err);
-            throw new Error(`Error fetching messages: ${err.message}`);
+            return { success: false, message: `Error fetching messages: ${err.message}` };
         }
     }
 
@@ -87,11 +112,12 @@ console.log("datass", chats);
             console.log("dataaaaa", chatId,content,senderId, receiverId);
             
             const newMessage = new Message({
-                senderId,
-                recieverId:receiverId,
+                senderId: new mongoose.Types.ObjectId(senderId),
+                recieverId: new mongoose.Types.ObjectId(receiverId),
                 content,
-                chatId
+                chatId: new mongoose.Types.ObjectId(chatId)
             });
+    
             const savedMessage = await newMessage.save();
             await Chat.findByIdAndUpdate(chatId, { lastMessage: savedMessage._id });
 
