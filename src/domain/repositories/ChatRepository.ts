@@ -98,6 +98,7 @@ async find(userId: string): Promise<{ success: boolean; message: string; data?: 
             if (!messages || messages.length === 0) {
                 return { success: false, message: "No messages found" };
             }
+    console.log("1111111115555555",messages);
     
             return { success: true, message: "Messages found", data: messages };
         } catch (error) {
@@ -107,7 +108,7 @@ async find(userId: string): Promise<{ success: boolean; message: string; data?: 
         }
     }
 
-    async createMessage(chatId:string, content:string, senderId:string, receiverId:string):Promise<{success:boolean, message:string, data?:IMessage}>{
+    async createMessage(chatId:string, content:string,images:string[], senderId:string, receiverId:string):Promise<{success:boolean, message:string, data?:IMessage}>{
         try {
             console.log("dataaaaa", chatId,content,senderId, receiverId);
             
@@ -115,6 +116,7 @@ async find(userId: string): Promise<{ success: boolean; message: string; data?: 
                 senderId: new mongoose.Types.ObjectId(senderId),
                 recieverId: new mongoose.Types.ObjectId(receiverId),
                 content,
+                imagesUrl:images,
                 chatId: new mongoose.Types.ObjectId(chatId)
             });
     
@@ -126,6 +128,30 @@ async find(userId: string): Promise<{ success: boolean; message: string; data?: 
             const err = error as Error;
             console.log("Error creating new messages", err);
             throw new Error(`Error creating new messages: ${err.message}`);
+        }
+    }
+
+    async saveImages(imageUrl:string[], senderId:string, chatId:string, receiverId:string):Promise<{success:boolean, message:string, data?:IMessage[]}>{
+        try {
+            console.log("repo id",receiverId);
+            
+            const message = new Message({
+                senderId: new mongoose.Types.ObjectId(senderId),
+                recieverId: new mongoose.Types.ObjectId(receiverId),
+                chatId: new mongoose.Types.ObjectId(chatId),
+                imagesUrl: imageUrl
+            })
+            await message.save()
+            if(!message){
+                return {success:false,message:"image now saved"}
+            }
+            console.log("saveddd ig",message);
+            
+            return {success:true, message:"Image saved successfully", data:[message]}
+        } catch (error) {
+            const err = error as Error;
+            console.log("Error saving images", err);
+            throw new Error(`Error saving images: ${err.message}`);
         }
     }
 }

@@ -15,7 +15,10 @@ const MessageSchema: Schema = new Schema({
     },
     content:{
         type:String,
-        required: true
+    },
+    imagesUrl:{
+        type:[String],
+        default:[]
     },
     chatId:{
         type:Schema.Types.ObjectId,

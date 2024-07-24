@@ -1,4 +1,5 @@
 import { ChatService } from "../application/use-case/chat";
+import { IImage } from "../domain/entities/IChat";
 
 class ChatController {
     private chatService: ChatService;
@@ -44,16 +45,33 @@ class ChatController {
         }
     }
     
-    async saveNewMessage(data:{chatId:string, content:string, senderId:string, receiverId:string}){
+    async saveNewMessage(data:{chatId:string, content:string,images:string[], senderId:string, receiverId:string}){
         try {
+            console.log("data cntrlllll1",data);
+            
             const chatId = data.chatId;
             const content = data.content;
+            const images = data.images;
             const senderId = data.senderId;
             const recieverId = data.receiverId;
-            const result = await this.chatService.newMessage(chatId,content, senderId, recieverId);
+            console.log("image",images);
+            
+            const result = await this.chatService.newMessage(chatId,content,images, senderId, recieverId);
             return result;
         } catch (error) {
             console.error("Error creating messages:", error);
+            throw error;
+        }
+    }
+
+    async saveImages(data:IImage){
+        try {
+            console.log("datassss contrl",data);
+            
+            const result = await this.chatService.addImages(data)
+            return result;
+        } catch (error) {
+            console.error("Error saving images:", error);
             throw error;
         }
     }
