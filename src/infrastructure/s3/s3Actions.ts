@@ -37,13 +37,12 @@ export async function uploadFileToS3(fileBuffer: Buffer | { type: 'Buffer', data
         await upload.done();
         console.log("S3 upload success");
         
-        // Generate a pre-signed URL
         const command = new GetObjectCommand({
             Bucket: config.bucketName,
             Key: imageName,
         });
         
-        const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 }); // URL expires in 1 hour
+        const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
         console.log("Generated pre-signed URL:", signedUrl);
         
         return signedUrl;
