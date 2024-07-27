@@ -20,6 +20,10 @@ const MessageSchema: Schema = new Schema({
         type:[String],
         default:[]
     },
+    videoUrl:{
+        type:String,
+        default:''
+    },
     chatId:{
         type:Schema.Types.ObjectId,
         ref:"Chat"

@@ -1,4 +1,4 @@
-import { IChat, IImage, IMessage } from "../../domain/entities/IChat";
+import { IChat, IImage, IMessage, IVideo } from "../../domain/entities/IChat";
 import { ChatRepository } from "../../domain/repositories/ChatRepository";
 import { fetchFileFromS3, uploadFileToS3 } from "../../infrastructure/s3/s3Actions";
 
@@ -48,9 +48,9 @@ class ChatService {
         }
     }
 
-    async newMessage(chatId: string, content: string, images: string[], senderId: string, receiverId: string): Promise<{ success: boolean, message: string, data?: IMessage }> {
+    async newMessage(chatId: string, content: string, images: string[],video:string, senderId: string, receiverId: string): Promise<{ success: boolean, message: string, data?: IMessage }> {
         try {
-            const result = await this.chatRepo.createMessage(chatId, content,images, senderId, receiverId);
+            const result = await this.chatRepo.createMessage(chatId, content,images,video, senderId, receiverId);
     
             if (!result || !result.success) {
                 return { success: result.success, message: result.message };
@@ -104,12 +104,28 @@ class ChatService {
             if (imageUrls.length === 0) {
                 return { success: false, message: "No images were successfully uploaded" };
             }
-    
-            // Return the image URLs directly
-            return { success: true, message: "Images uploaded successfully", data: imageUrls };
+                return { success: true, message: "Images uploaded successfully", data: imageUrls };
         } catch (error) {
             console.error("Error in addImages function:", error);
             return { success: false, message: `Error saving images: ${error instanceof Error ? error.message : "Unknown error"}` };
+        }
+    }
+
+    async addVideo(data: IVideo): Promise<{success: boolean, message:string, data?:string}>{
+        try {
+            let videoUrl:string='';
+            if(data.video){
+                videoUrl = await uploadFileToS3(data.video.buffer, data.video.originalname);
+            }
+            if(!videoUrl){
+                return {success:false, message:"Video not uploaded to s3"}
+            }
+            console.log("video saved s3??", videoUrl);
+            
+            return {success:true, message:"Video uploaded successfully", data:videoUrl}
+        } catch (error) {
+            console.error("Error in addVideo function:", error);
+            return { success: false, message: `Error saving videos: ${error instanceof Error ? error.message : "Unknown error"}` };
         }
     }
 }
