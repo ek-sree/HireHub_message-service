@@ -106,9 +106,8 @@ async find(userId: string): Promise<{ success: boolean; message: string; data?: 
         }
     }
 
-    async createMessage(chatId:string, content:string,images:string[],video:string, senderId:string, receiverId:string):Promise<{success:boolean, message:string, data?:IMessage}>{
+    async createMessage(chatId:string, content:string,images:string[],video:string,record:string,recordDuration:number, senderId:string, receiverId:string):Promise<{success:boolean, message:string, data?:IMessage}>{
         try {
-            console.log("dataaaaa", chatId,content,senderId, receiverId);
             
             const newMessage = new Message({
                 senderId: new mongoose.Types.ObjectId(senderId),
@@ -116,6 +115,8 @@ async find(userId: string): Promise<{ success: boolean; message: string; data?: 
                 content,
                 imagesUrl:images,
                 videoUrl:video,
+                recordUrl:record,
+                recordDuration,
                 chatId: new mongoose.Types.ObjectId(chatId)
             });
     

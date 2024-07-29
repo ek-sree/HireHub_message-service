@@ -1,5 +1,5 @@
 import { ChatService } from "../application/use-case/chat";
-import { IImage, IVideo } from "../domain/entities/IChat";
+import { IAUdio, IImage, IVideo } from "../domain/entities/IChat";
 
 class ChatController {
     private chatService: ChatService;
@@ -45,7 +45,7 @@ class ChatController {
         }
     }
     
-    async saveNewMessage(data:{chatId:string, content:string,images:string[],video:string, senderId:string, receiverId:string}){
+    async saveNewMessage(data:{chatId:string, content:string,images:string[],video:string,record:string, recordDuration:number, senderId:string, receiverId:string}){
         try {
             console.log("data cntrlllll1",data);
             
@@ -53,11 +53,13 @@ class ChatController {
             const content = data.content;
             const images = data.images;
             const video= data.video;
+            const record = data.record;
+            const recordDuration = data.recordDuration
             const senderId = data.senderId;
             const recieverId = data.receiverId;
             console.log("image",images);
             
-            const result = await this.chatService.newMessage(chatId,content,images,video, senderId, recieverId);
+            const result = await this.chatService.newMessage(chatId,content,images,video,record,recordDuration, senderId, recieverId);
             return result;
         } catch (error) {
             console.error("Error creating messages:", error);
@@ -83,6 +85,16 @@ class ChatController {
             return result;
         } catch (error) {
             console.error("Error saving video:", error);
+            throw error;
+        }
+    }
+
+    async saveAudio(data: IAUdio){
+        try {
+            const result = await this.chatService.addAudio(data);
+            return result;
+        } catch (error) {
+            console.error("Error saving audio:", error);
             throw error;
         }
     }

@@ -6,6 +6,7 @@ export interface IMessage{
     content?:string;
     imagesUrl?:string[];
     videoUrl?:string;
+    recordUrl?:string;
     chatId?:mongoose.Types.ObjectId;
 }
 
@@ -30,6 +31,16 @@ export interface IVideo {
     senderId:string;
     receiverId: string;
     video?:{
+        buffer: Buffer;
+        originalname: string;
+    }
+}
+
+export interface IAUdio {
+    chatId: string;
+    senderId:string;
+    receiverId: string;
+    audio?:{
         buffer: Buffer;
         originalname: string;
     }

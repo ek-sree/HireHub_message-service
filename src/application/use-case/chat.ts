@@ -1,4 +1,4 @@
-import { IChat, IImage, IMessage, IVideo } from "../../domain/entities/IChat";
+import { IAUdio, IChat, IImage, IMessage, IVideo } from "../../domain/entities/IChat";
 import { ChatRepository } from "../../domain/repositories/ChatRepository";
 import { fetchFileFromS3, uploadFileToS3 } from "../../infrastructure/s3/s3Actions";
 
@@ -48,9 +48,9 @@ class ChatService {
         }
     }
 
-    async newMessage(chatId: string, content: string, images: string[],video:string, senderId: string, receiverId: string): Promise<{ success: boolean, message: string, data?: IMessage }> {
+    async newMessage(chatId: string, content: string, images: string[],video:string,record:string,recordDuration:number, senderId: string, receiverId: string): Promise<{ success: boolean, message: string, data?: IMessage }> {
         try {
-            const result = await this.chatRepo.createMessage(chatId, content,images,video, senderId, receiverId);
+            const result = await this.chatRepo.createMessage(chatId, content,images,video,record,recordDuration, senderId, receiverId);
     
             if (!result || !result.success) {
                 return { success: result.success, message: result.message };
@@ -120,12 +120,27 @@ class ChatService {
             if(!videoUrl){
                 return {success:false, message:"Video not uploaded to s3"}
             }
-            console.log("video saved s3??", videoUrl);
             
             return {success:true, message:"Video uploaded successfully", data:videoUrl}
         } catch (error) {
             console.error("Error in addVideo function:", error);
             return { success: false, message: `Error saving videos: ${error instanceof Error ? error.message : "Unknown error"}` };
+        }
+    }
+
+    async addAudio(data:IAUdio): Promise<{success: boolean, message:string, data?:string}>{
+        try {
+            let recordUrl: string='';
+            if(data.audio){
+                recordUrl = await uploadFileToS3(data.audio.buffer, data.audio.originalname);
+            }
+            if(!recordUrl){
+                return {success:false, message:"Audio is not uploaded to s3"}
+            }
+            return {success:true, message:"Audio uploaded to s3", data:recordUrl}
+        } catch (error) {
+            console.error("Error in add audio function:", error);
+            return { success: false, message: `Error saving audio: ${error instanceof Error ? error.message : "Unknown error"}` };
         }
     }
 }

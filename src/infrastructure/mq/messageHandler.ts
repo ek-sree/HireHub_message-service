@@ -26,6 +26,10 @@ export default class MessageHandler{
             case 'save-image':
                 response = await chatController.saveImages(data);
                 break;   
+
+            case 'save-audio':
+                response = await chatController.saveAudio(data);
+                break;    
                 
             case 'save-video':
                 response = await chatController.saveVideo(data);

@@ -24,6 +24,14 @@ const MessageSchema: Schema = new Schema({
         type:String,
         default:''
     },
+    recordUrl:{
+        type:String,
+        default:''
+    },
+    recordDuration:{
+        type:Number,
+        default:0
+    },
     chatId:{
         type:Schema.Types.ObjectId,
         ref:"Chat"
