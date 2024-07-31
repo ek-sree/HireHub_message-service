@@ -78,13 +78,9 @@ async find(userId: string): Promise<{ success: boolean; message: string; data?: 
                 console.log("Invalid receiverId format");
                 return { success: false, message: "Invalid receiverId format" };
             }
-    console.log("userIdddddddddddddd123",userId, receiverId);
     
             const UserIdObj = new mongoose.Types.ObjectId(userId);
             const ReceiverIdObj = new mongoose.Types.ObjectId(receiverId);
-    
-            console.log("UserIdObj:", UserIdObj);
-            console.log("ReceiverIdObj:", ReceiverIdObj);
     
             const messages = await Message.find({
                 $or: [
