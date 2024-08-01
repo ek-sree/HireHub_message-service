@@ -71,7 +71,6 @@ async find(userId: string): Promise<{ success: boolean; message: string; data?: 
             console.log("Received receiverId:", receiverId);
     
             if (!mongoose.Types.ObjectId.isValid(userId)) {
-                console.log("Invalid userId format");
                 return { success: false, message: "Invalid userId format" };
             }
             if (!mongoose.Types.ObjectId.isValid(receiverId)) {

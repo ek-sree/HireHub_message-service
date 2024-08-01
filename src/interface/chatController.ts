@@ -11,7 +11,6 @@ class ChatController {
     async fetchConvoUsers(data:{userId:string}){
         try {
             const userId = data.userId;
-            console.log("UserId", userId);
             
             const result = await this.chatService.getConvoUsers(userId);
             return result;
@@ -47,7 +46,6 @@ class ChatController {
     
     async saveNewMessage(data:{chatId:string, content:string,images:string[],video:string,record:string, recordDuration:number, senderId:string, receiverId:string}){
         try {
-            console.log("data cntrlllll1",data);
             
             const chatId = data.chatId;
             const content = data.content;
@@ -57,7 +55,6 @@ class ChatController {
             const recordDuration = data.recordDuration
             const senderId = data.senderId;
             const recieverId = data.receiverId;
-            console.log("image",images);
             
             const result = await this.chatService.newMessage(chatId,content,images,video,record,recordDuration, senderId, recieverId);
             return result;
@@ -69,7 +66,6 @@ class ChatController {
 
     async saveImages(data:IImage){
         try {
-            console.log("datassss contrl",data);
             
             const result = await this.chatService.addImages(data)
             return result;

@@ -85,7 +85,6 @@ class ChatService {
             let imageUrls: string[] = [];
     
             if (data.images && data.images.length > 0) {
-                console.log("Number of images to upload:", data.images.length);
                 for (const image of data.images) {
                     try {
                         console.log("Processing image:", image.originalname);
