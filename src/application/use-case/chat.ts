@@ -56,21 +56,6 @@ class ChatService {
                 return { success: result.success, message: result.message };
             }
     
-            // let processedImages: string[] = [];
-            // if (images) {
-            //     if (Array.isArray(images)) {
-            //         processedImages = await Promise.all(images.map(img => fetchFileFromS3(img)));
-            //     } else if (typeof images === 'string') {
-            //         processedImages = [await fetchFileFromS3(images)];
-            //     }
-            // }
-            // console.log("dada proccess",processedImages);
-            
-            //     const updatedData = {
-            //     ...result.data,
-            //     imagesUrl: processedImages
-            // };
-    
             return { success: result.success, message: result.message, data: result.data };
         } catch (error) {
             console.error("Error creating messages:", error);
@@ -79,16 +64,12 @@ class ChatService {
     }
 
     async addImages(data: IImage): Promise<{ success: boolean, message: string, data?: string[] }> {
-        try {
-            console.log("dadada", JSON.stringify({...data, images: data.images ? `${data.images.length} images` : 'No images'}));
-            
+        try {            
             let imageUrls: string[] = [];
     
             if (data.images && data.images.length > 0) {
                 for (const image of data.images) {
                     try {
-                        console.log("Processing image:", image.originalname);
-                        console.log("Buffer type:", typeof image.buffer);
                         const imageUrl = await uploadFileToS3(image.buffer, image.originalname);
                         imageUrls.push(imageUrl);
                         console.log(`Successfully uploaded image: ${image.originalname}, URL: ${imageUrl}`);
@@ -96,9 +77,7 @@ class ChatService {
                         console.error(`Error uploading image to S3:`, uploadError);
                     }
                 }
-            } else {
-                console.log("No images found in the data object");
-            }
+            } 
     
             if (imageUrls.length === 0) {
                 return { success: false, message: "No images were successfully uploaded" };

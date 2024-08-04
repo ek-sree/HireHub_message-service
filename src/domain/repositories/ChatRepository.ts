@@ -14,7 +14,6 @@ async find(userId: string): Promise<{ success: boolean; message: string; data?: 
         }
 
         const UserId = new mongoose.Types.ObjectId(userId);
-        console.log("userIDD", UserId);
         
         const chats = await Chat.find({ participants: UserId })
             .populate({
@@ -25,9 +24,6 @@ async find(userId: string): Promise<{ success: boolean; message: string; data?: 
         if (!chats || chats.length === 0) {
             return { success: false, message: "No chats found" };
         }
-
-        console.log("datass", chats);
-
         const formattedChats = chats.map(chat => ({
             _id: chat._id,
             participants: chat?.participants?.filter(p => p !== userId),
@@ -67,8 +63,6 @@ async find(userId: string): Promise<{ success: boolean; message: string; data?: 
 
     async findMessages(userId: string, receiverId: string): Promise<{ success: boolean; message: string; data?: IMessage[]; }> {
         try {
-            console.log("Received userId:", userId);
-            console.log("Received receiverId:", receiverId);
     
             if (!mongoose.Types.ObjectId.isValid(userId)) {
                 return { success: false, message: "Invalid userId format" };

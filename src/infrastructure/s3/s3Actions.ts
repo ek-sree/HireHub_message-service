@@ -9,18 +9,13 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 const randomImageName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex');
 
 export async function uploadFileToS3(fileBuffer: Buffer | { type: 'Buffer', data: number[] }, originalname: string): Promise<string> {
-    console.log("Starting S3 upload process");
-    console.log("Original filename:", originalname);
     
     const buffer = Buffer.isBuffer(fileBuffer) ? fileBuffer : Buffer.from(fileBuffer.data);
-    console.log("File buffer length:", buffer.length);
     
     const imageName = randomImageName();
-    console.log("Generated image name:", imageName);
     
     const extension = originalname.split('.').pop() || '';
     const contentType = mime.lookup(extension) || 'application/octet-stream';
-    console.log("Content type:", contentType);
 
     const upload = new Upload({
         client: s3,
@@ -33,9 +28,7 @@ export async function uploadFileToS3(fileBuffer: Buffer | { type: 'Buffer', data
     });
 
     try {
-        console.log("Starting upload...");
         await upload.done();
-        console.log("S3 upload success");
         
         const command = new GetObjectCommand({
             Bucket: config.bucketName,
