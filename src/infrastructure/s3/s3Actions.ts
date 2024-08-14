@@ -36,7 +36,6 @@ export async function uploadFileToS3(fileBuffer: Buffer | { type: 'Buffer', data
         });
         
         const signedUrl = await getSignedUrl(s3, command);
-        console.log("Generated pre-signed URL:", signedUrl);
         
         return signedUrl;
     } catch (error) {
@@ -45,14 +44,14 @@ export async function uploadFileToS3(fileBuffer: Buffer | { type: 'Buffer', data
     }
 }
 
-export async function fetchFileFromS3(key: string, expiresIn = 604800): Promise<string> {
+export async function fetchFileFromS3(key: string): Promise<string> {
     try {
         
         const command = new GetObjectCommand({
             Bucket: config.bucketName,
             Key: key,
         });
-        const url = await getSignedUrl(s3, command, { expiresIn }); 
+        const url = await getSignedUrl(s3, command); 
         
         return url;
     } catch (error) {
