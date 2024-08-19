@@ -32,6 +32,10 @@ const MessageSchema: Schema = new Schema({
         type:Number,
         default:0
     },
+    read:{
+        type:Boolean,
+        default:false
+    },
     chatId:{
         type:Schema.Types.ObjectId,
         ref:"Chat"
